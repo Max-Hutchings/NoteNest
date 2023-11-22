@@ -1,20 +1,23 @@
 // import axios from "axios";
-// import  useToken  from "./getToken"; // Adjust the path based on where getToken is located
+// import {useSelector } from "react-redux"
+// import useToken from "./getToken"
+// // import {store } from "../app/store"
 //
-// function createAxiosInstance(store) {
-//     const axiosInstance = axios.create({
-//         baseURL: "/api"
-//     });
+// // Create an Axios instance
+// const createAxiosInstance = axios.create({
+//     baseURL: 'http://127.0.0.1:8000/api/'
+// });
 //
-//     axiosInstance.interceptors.request.use((config) => {
-//         const token = useToken();
-//         if (token){
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//     });
+// // Setup request interceptor
+// createAxiosInstance.interceptors.request.use((config) => {
+//     // const state = store.getState();
+//     // const token = state.auth.token;
+//     const token = "dddd"
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+// });
 //
-//     return axiosInstance;
-// };
-//
+// // Export the Axios instance
 // export default createAxiosInstance;

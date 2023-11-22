@@ -19,10 +19,20 @@ def get_serialized_note_sections(user):
     """
     Fetches and serializes all user note sections and notes.
     User object inputted.
+    Notes within each section are ordered by 'position' in ascending order.
     """
 
-    sections = NoteSection.objects.filter(user=user).prefetch_related("notes")
+    # Create a queryset for notes ordered by 'position'
+    notes_ordered_queryset = Note.objects.order_by('position')
+
+    # Use Prefetch to specify the custom queryset for notes
+    sections = NoteSection.objects.filter(user=user).prefetch_related(
+        Prefetch('notes', queryset=notes_ordered_queryset)
+    )
+
+    # Serialize the sections
     serialized_sections = NoteSectionSerializer(sections, many=True).data
+
     print("Got and serialized note section")
     return serialized_sections
 
@@ -278,49 +288,58 @@ def clear_completed_tasks(request):
         return Response({"status": f"Failed move completed tasks to section because: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["PUT"])
-def update_note_position(request):
-    try:
-        user = get_user_instance(request.user.id)
-        new_note_position = request.data.get("newPosition")
-        section_id = request.data.get("sectionId")
+# @api_view(["PUT"])
+# def update_note_position(request):
+#     try:
+#         user = get_user_instance(request.user.id)
+#         new_note_position = request.data.get("newPosition")
+#         section_id = request.data.get("sectionId")
+#
+#         with transaction.atomic():
+#             note_to_update = Note.objects.get(pk=request.data.get("noteId"))
+#
+#             notes_to_push = Note.objects.filter(section=section_id, position__gte=new_note_position)
+#             notes_to_push.update(position=F("position")+1)
+#
+#             note_to_update.position = new_note_position
+#             note_to_update.save()
+#
+#         return Response(get_serialized_note_sections(user))
+#
+#     except Exception as e:
+#         return JsonResponse({"status": f"Failed to update order due to: {e}"})
 
-        with transaction.atomic():
-            note_to_update = Note.objects.get(pk=request.data.get("noteId"))
-
-            notes_to_push = Note.objects.filter(section=section_id, position__gte=new_note_position)
-            notes_to_push.update(position=F("position")+1)
-
-            note_to_update.position = new_note_position
-            note_to_update.save()
-
-        return Response(get_serialized_note_sections(user))
-
-    except Exception as e:
-        return JsonResponse({"status": f"Failed to update order due to: {e}"})
 
 
-
-@api_view(["PUT"])
-def assign_new_note_position(request):
+@api_view(["POST"])
+def update_all_section_notes(request):
     """
     Assigns a new note position and updates them in the database.
+    It takes the new positions assigned from frontend and updates database.
     Utilizes a database transaction to ensure all updates are done atomically.
     Returns a success or failure response.
     Assumes that `notePositions` is a list of dictionaries with note IDs as keys and their new positions as values.
     """
 
     try:
-        note_positions = request.data.get("notePositions")
-
+        print("Called")
+        section_id = request.data.get("sectionId")
+        section_notes = request.data.get("sectionNotes")
+        print(section_notes)
+        print(section_id)
         with transaction.atomic():
-            for note in note_positions:
-                updated_notes = Note.objects.filter(id=note).update(position=note_positions[note])
-                print("updated note position")
-                print(updated_notes)
-            return JsonResponse({"status": "Successfully updated note position"})
+            for note in section_notes:
+                note_id = note["id"]
+                note_position = note["position"]
+                print(note_id)
+                print(note_position)
+                Note.objects.filter(id=note_id).update(position=note_position)
+
+        return JsonResponse({"status": "Successfully updated note position"})
     except Exception as e:
+        print(e)
         return JsonResponse({"status": f"Failed to change note position due to: {e}"})
+
 
 @api_view(["POST"])
 def create_user_account(request):

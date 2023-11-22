@@ -2,11 +2,11 @@ import {createSlice} from "@reduxjs/toolkit";
 import {
     addSection,
     addSectionNote,
-    addSectionTitle, assignNewNotePosition, clearCompletedNotes,
+    addSectionTitle, clearCompletedNotes,
     deleteNote,
     deleteSection,
     getSections,
-    saveNote, toggleCompleteNote
+    saveNote, toggleCompleteNote, updateAllNotePositions
 } from "../NoteSectionsAPI";
 
 
@@ -22,15 +22,27 @@ const initialState = {
 const asyncActionsReturnSections = [getSections, addSection, addSectionTitle, addSectionNote,saveNote,
                       deleteNote, deleteSection, toggleCompleteNote, clearCompletedNotes,
                      ]
-const asyncActionsDontReturnSection = [assignNewNotePosition,]
+const asyncActionsDontReturnSection = [updateAllNotePositions,]
 
 
 const noteSectionsSlice = createSlice({
     name: "noteSections",
     initialState,
-    reducers:{
+    reducers: {
+    // ... other reducers ...
+    updateSectionNotes: (state, action) => {
 
+        const { sectionId, newNotes } = action.payload;
+        console.log("Reducer called")
+        console.log(sectionId)
+        console.log(newNotes)
+        const sectionIndex = state.sections.findIndex(section => section.id === sectionId);
+        if (sectionIndex !== -1) {
+            state.sections[sectionIndex].notes = newNotes;
+        }
     },
+    // ... other reducers ...
+},
     extraReducers: (builder) =>{
         asyncActionsReturnSections.forEach(action => {
             builder
@@ -39,11 +51,12 @@ const noteSectionsSlice = createSlice({
                 })
                 .addCase(action.rejected, (state, action) => {
                     state.status = "failed";
-                    state.error = action.payload
+                    state.error = action.payload;
                 })
                 .addCase(action.fulfilled, (state, action) => {
                     state.status = "succeeded"
-                    state.sections = action.payload.data.sort((a, b) => b.section_type.localeCompare(a.section_type))
+                    state.sections = action.payload;
+
                 })
         })
         asyncActionsDontReturnSection.forEach(action => {
@@ -63,5 +76,7 @@ const noteSectionsSlice = createSlice({
 })
 
 export default noteSectionsSlice.reducer
+
+export const { updateSectionNotes } = noteSectionsSlice.actions;
 
 

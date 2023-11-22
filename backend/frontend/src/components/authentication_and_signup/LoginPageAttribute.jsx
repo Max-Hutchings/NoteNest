@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 import "./sign_up_form.css";
 import {useMediaQuery} from "react-responsive";
 import AuthenticationImage from "./authentication_components/AuthenticationImage";

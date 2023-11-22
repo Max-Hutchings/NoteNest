@@ -1,5 +1,5 @@
 import "./navbar.css"
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 import { Link } from 'react-router-dom';
 import {useMediaQuery} from "react-responsive";
 import Create from '@mui/icons-material/Create';

@@ -4,63 +4,55 @@ import NoteTextArea from "./note_text_area/NoteTextArea";
 import DeleteIcon from '@mui/icons-material/Delete';
 import {closestCenter, DndContext, useDroppable} from "@dnd-kit/core"
 import {SortableContext, verticalListSortingStrategy, arrayMove} from "@dnd-kit/sortable";
-
-
-
-
+import {useDispatch, useSelector} from "react-redux";
+import { updateSectionNotes } from "../../../../services/slices/NoteSectionsSlice"
 
 
 function StandardNoteSection(props){
 
+    const dispatch = useDispatch()
+
     // const {token} = useContext(AuthContext)
     const token = "123";
     const sectionId = props.sectionData.id
+    console.log(sectionId)
     // console.log(props.sectionData)
     //
     const [title, setTitle] = useState(props.sectionData.title)
     const [addNoteText, setAddNoteText] = useState("")
-    const [notes, setNotes] = useState(props.sectionData.notes)
+    const notes = useSelector(state => {
+        // Find the specific note section by its ID within the sections array
+        const section = state.noteSections.sections.find(s => s.id === sectionId);
+        // Return the notes array if the section is found, otherwise return an empty array
+        return section ? section.notes : [];
+    });
 
-
-    useEffect(() => {
-        setNotes(props.sectionData.notes.sort((a, b) => a.position - b.position))
-        console.log("=====SETNOTES==========")
-        console.log(notes)
-    }, [props.sectionData.notes]);
-
-
-    const array = notes.map(note => String(note.id)); // Convert each note.id to a string
 
 
     function handleNoteDrag(event) {
         const { active, over } = event;
+        console.log("ActiveID: ", active.id)
+        console.log("OverID: ", over.id)
+
 
         if (active.id !== over.id) {
-            setNotes((prevNotes) => {
-                // Find the index of the active and over items based on their position
-                const activeIndex = prevNotes.findIndex(note => note.position === parseInt(active.id, 10));
-                const overIndex = prevNotes.findIndex(note => note.position === parseInt(over.id, 10));
+            const oldIndex = notes.findIndex(note => note.position === active.id);
+            const newIndex = notes.findIndex(note => note.position === over.id);
 
-                // Ensure both indices are found
-                if (activeIndex === -1 || overIndex === -1) {
-                    return prevNotes;
-                }
+            if (oldIndex === -1 || newIndex === -1) {
+                return; // Exit if either note is not found
+            }
 
-                // Reorder the notes array
-                const newNotes = arrayMove(prevNotes, activeIndex, overIndex);
+            const newNotes = arrayMove([...notes], oldIndex, newIndex);
+            // Reassign positions based on new order
+            const updatedNotes = newNotes.map((note, index) => ({ ...note, position: index + 1 }));
 
-
-                // After moving, reassign positions based on the new order
-                const positionCorrectedNotes = newNotes.map((note, index) => ({...note, position: index + 1}))
-                const noteIdAndPosition = {}
-                positionCorrectedNotes.forEach(note => noteIdAndPosition[note.id] = note.position)
-                console.log(noteIdAndPosition)
-                // AssignNewNotePosition(token, noteIdAndPosition)
-                return positionCorrectedNotes
-            });
+            console.log("Dispatching updateSectionNotes", {sectionId: sectionId, newNotes: updatedNotes});
+            dispatch(updateSectionNotes({sectionId: sectionId, newNotes: updatedNotes}));
+            props.handleUpdateAllNotePositions(sectionId, updatedNotes)
         }
-    }
 
+    }
 
 
 
@@ -92,11 +84,11 @@ function StandardNoteSection(props){
             </div>
 
                 <SortableContext
-                    items={notes.map(note => note.position)}
+                    items={notes ? notes.map(note => note.position) : []}
                     strategy={verticalListSortingStrategy}
                 >
 
-                    {notes.map((note, index) => {
+                    {notes && notes.map((note, index) => {
                         return (
                             <NoteTextArea
                                 key={note.id}
@@ -115,7 +107,6 @@ function StandardNoteSection(props){
             <div className={"row"}>
 
                 <div className="col d-flex justify-content-center align-items-center note-section-container">
-                    {/*<input className={"note-section-note"} name={"add-note"} placeholder={"Add Note"}/>*/}
                     <textarea
                         className={"note-section-note"}
                         name={"add-note"}

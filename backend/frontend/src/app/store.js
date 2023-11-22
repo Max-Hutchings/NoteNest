@@ -13,4 +13,4 @@ const store = configureStore({
 // const axiosInstance = createAxiosInstance(store)
 
 
-export { store}
+export { store }

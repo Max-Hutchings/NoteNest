@@ -1,13 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import useToken from "../services/getToken";
+// import useToken from "../services/getToken";
+import createAxiosInstance from "./createAxiosInstance";
+import {useSelector } from "react-redux"
 
 
 
-function useConfig(){
-
-    const token = useToken()
-
+function config(token){
     return {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -18,11 +17,15 @@ function useConfig(){
 
 export const getSections = createAsyncThunk(
     "noteSections/getSections",
-    async(_, { rejectWithValue }) => {
+    async(_, { getState, rejectWithValue }) => {
         try{
-            const response = await axios.get("http://127.0.0.1:8000/api/get-sections/", useConfig());
+            const token = getState().auth.token;
+            console.log(token)
+            console.log("GET SECTIONS CALLED")
+            const response = await axios.get("http://127.0.0.1:8000/api/get-sections/", config(token) );
             return response.data
         }catch(e){
+            console.log(e)
             return rejectWithValue(e.response.data)
         }
     }
@@ -32,12 +35,13 @@ export const getSections = createAsyncThunk(
 // Define the thunk using createAsyncThunk
 export const addSection = createAsyncThunk(
     "noteSections/addSection",
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
+            const token = getState().auth.token;
             const response = await axios.post(
                 "http://127.0.0.1:8000/api/add-section/",
                 {},
-                useConfig()
+                config(token)
             );
             return response.data;
         } catch (e) {
@@ -49,12 +53,13 @@ export const addSection = createAsyncThunk(
 
 export const addSectionTitle = createAsyncThunk(
     "noteSections/addSectionTitle",
-    async ({newTitle, sectionId}, {rejectWithValue}) => {
+    async ({newTitle, sectionId}, {getState, rejectWithValue}) => {
         try{
+            const token = getState().auth.token;
             const response = await axios.post("http://127.0.0.1:8000/api/add-section-title/",{
             "section_title": newTitle,
             "section_id": sectionId
-                }, useConfig());
+                }, config(token));
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -64,12 +69,13 @@ export const addSectionTitle = createAsyncThunk(
 
 export const addSectionNote = createAsyncThunk(
     "noteSections/addSectionNote",
-    async ({noteText, sectionId}, {rejectWithValue}) =>{
+    async ({noteText, sectionId}, {getState, rejectWithValue}) =>{
         try{
+            const token = getState().auth.token;
             const response = await axios.post("http://127.0.0.1:8000/api/add-section-note/", {
             "noteText": noteText,
             "sectionId": sectionId
-                }, useConfig())
+                }, config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -79,13 +85,14 @@ export const addSectionNote = createAsyncThunk(
 
 export const saveNote = createAsyncThunk(
     "noteSections/saveNote",
-    async({noteText, noteId, sectionId}, {rejectWithValue}) => {
+    async({noteText, noteId, sectionId}, {getState, rejectWithValue}) => {
         try{
+            const token = getState().auth.token;
             const response = await axios.put("http://127.0.0.1:8000/api/add-section-note/", {
                 "sectionId": sectionId,
                 "noteText": noteText,
                 "noteId": noteId,
-            }, useConfig())
+            }, config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -94,9 +101,10 @@ export const saveNote = createAsyncThunk(
 
 export const deleteNote = createAsyncThunk(
     "noteSections/deleteNote",
-    async ({noteId}, {rejectWithValue}) => {
+    async ({noteId}, {getState, rejectWithValue}) => {
         try{
-            const response = await axios.delete(`http://127.0.0.1:8000/api/delete-note/${noteId}`, useConfig())
+            const token = getState().auth.token;
+            const response = await axios.delete(`http://127.0.0.1:8000/api/delete-note/${noteId}`, config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -106,9 +114,10 @@ export const deleteNote = createAsyncThunk(
 
 export const deleteSection = createAsyncThunk(
     "noteSections/deleteSection",
-    async ({sectionId}, {rejectWithValue}) =>{
+    async ({sectionId}, {getState, rejectWithValue}) =>{
         try{
-            const response = await axios.delete(`http://127.0.0.1:8000/api/delete-section/${sectionId}`, useConfig())
+            const token = getState().auth.token;
+            const response = await axios.delete(`http://127.0.0.1:8000/api/delete-section/${sectionId}`, config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -118,10 +127,11 @@ export const deleteSection = createAsyncThunk(
 
 export const toggleCompleteNote = createAsyncThunk(
     "noteSections/toggleCompleteNote",
-    async ({noteId}, {rejectWithValue}) => {
+    async ({noteId}, {getState, rejectWithValue}) => {
         try{
+            const token = getState().auth.token;
             const response = await axios.put(`http://127.0.0.1:8000/api/complete-note/`,
-            {"noteId": noteId}, useConfig())
+            {"noteId": noteId}, config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -131,9 +141,10 @@ export const toggleCompleteNote = createAsyncThunk(
 
 export const clearCompletedNotes = createAsyncThunk(
     "noteSections/clearCompletedNotes",
-    async (_, {rejectWithValue}) => {
+    async (_, {getState, rejectWithValue}) => {
         try{
-            const response = await axios.post(`http://127.0.0.1:8000/api/clear-completed-tasks/`, {}, useConfig())
+            const token = getState().auth.token;
+            const response = await axios.post(`http://127.0.0.1:8000/api/clear-completed-tasks/`, {}, config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
@@ -141,18 +152,37 @@ export const clearCompletedNotes = createAsyncThunk(
     }
 )
 
-export const assignNewNotePosition = createAsyncThunk(
+export const updateAllNotePositions = createAsyncThunk(
     "noteSections/assignNewNotePosition",
-    async ({notePosition}, {rejectWithValue}) => {
+    async ({sectionId, sectionNotes}, {getState, rejectWithValue}) => {
         try{
-            const response = await axios.put(
-                `http://127.0.0.1:8000/api/assign-new-note-position/`,
-                {"notePositions": notePosition},
-                useConfig())
+            const token = getState().auth.token;
+            const response = await axios.post(
+                `http://127.0.0.1:8000/api/update-all-section-notes/`,
+                {"sectionId": sectionId,
+                "sectionNotes": sectionNotes},
+                config(token))
             return response.data
         }catch(e){
             return rejectWithValue(e.response.data)
         }
     }
+
 )
 
+// export const updateNotePosition = createAsyncThunk(
+//     "noteSections/assignNewNotePosition",
+//     async ({newNotePosition}, {getState, rejectWithValue}) => {
+//         try{
+//             const token = getState().auth.token;
+//             const response = await axios.put(
+//                 `http://127.0.0.1:8000/api/assign-new-note-position/`,
+//                 {"newPositions": newNotePosition},
+//                 config(token))
+//             return response.data
+//         }catch(e){
+//             return rejectWithValue(e.response.data)
+//         }
+//     }
+//
+// )

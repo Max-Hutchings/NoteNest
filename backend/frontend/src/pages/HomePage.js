@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React from "react";
 import Navbar from "../components/navbar/Navbar"
 import { authSlice} from "../services/slices/UserAthenticationSlice";
 import { useSelector} from "react-redux";
