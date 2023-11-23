@@ -6,10 +6,10 @@ import Navbar from "./components/navbar/Navbar";
 import SignUpPage from "./pages/SignUpPage";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from "react-router-dom";
-import CheckAuthenticated from "./services/CheckAuthenticated";
+import CheckAuthenticated from "./services/utilities/CheckAuthenticated";
 import Footer from "./components/footer/Footer";
 import { useDispatch } from "react-redux";
-import { refreshAuthentication } from "./services/RefreshAuthentication"
+import { refreshAuthentication } from "./services/apis/RefreshAuthentication"
 
 
 function App() {

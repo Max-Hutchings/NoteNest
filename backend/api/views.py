@@ -8,7 +8,7 @@ from .serializers import UserSerializer, NoteSectionSerializer, NoteSerializer
 from .models import User, NoteSection, Note
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.middleware.csrf import get_token
+from django.middleware.csrf import get_token, logger
 from rest_framework.views import APIView
 from django.db import transaction
 from rest_framework import status
@@ -322,18 +322,38 @@ def update_all_section_notes(request):
     """
 
     try:
-        print("Called")
+        # print("Called")
         section_id = request.data.get("sectionId")
         section_notes = request.data.get("sectionNotes")
-        print(section_notes)
-        print(section_id)
+        # print(section_notes)
+
+
         with transaction.atomic():
             for note in section_notes:
                 note_id = note["id"]
                 note_position = note["position"]
-                print(note_id)
-                print(note_position)
-                Note.objects.filter(id=note_id).update(position=note_position)
+                note_section_id = note["section"]
+                updated_count = Note.objects.filter(id=note_id).update(position=note_position)
+
+
+        return JsonResponse({"status": "Successfully updated note position"})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"status": f"Failed to change note position due to: {e}"})
+
+
+@api_view(["PUT"])
+def update_notes_section(request):
+    """
+    Update the section attached to a single note
+    """
+    try:
+        new_section_id = request.data.get("newSectionId")
+        note_id = request.data.get("noteId")
+        new_section = NoteSection.objects.get(id=new_section_id)
+        note = Note.objects.get(id=note_id)
+        note.section = new_section
+        note.save()
 
         return JsonResponse({"status": "Successfully updated note position"})
     except Exception as e:

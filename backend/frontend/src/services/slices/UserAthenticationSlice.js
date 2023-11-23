@@ -1,6 +1,6 @@
 import {jwtDecode} from "jwt-decode"
 import { useNavigate } from 'react-router-dom';
-import { refreshAuthentication  } from "../RefreshAuthentication"
+import { refreshAuthentication  } from "../apis/RefreshAuthentication"
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios"
 

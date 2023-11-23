@@ -7,7 +7,7 @@ import {
     deleteSection,
     getSections,
     saveNote, toggleCompleteNote, updateAllNotePositions
-} from "../NoteSectionsAPI";
+} from "../apis/NoteSectionsAPI";
 
 
 // Initial State of Note Sections
@@ -41,7 +41,15 @@ const noteSectionsSlice = createSlice({
             state.sections[sectionIndex].notes = newNotes;
         }
     },
-    // ... other reducers ...
+    removeSectionNote: (state, action) => {
+        const { sectionId, noteId } = action.payload
+        const sectionIndex = state.sections.findIndex(section => section.id === sectionId);
+        if (sectionIndex !== -1) {
+            state.sections[sectionIndex].notes = state.sections[sectionIndex].notes.filter(note => note.id !== noteId);
+
+        }
+    }
+
 },
     extraReducers: (builder) =>{
         asyncActionsReturnSections.forEach(action => {
@@ -77,6 +85,6 @@ const noteSectionsSlice = createSlice({
 
 export default noteSectionsSlice.reducer
 
-export const { updateSectionNotes } = noteSectionsSlice.actions;
+export const { updateSectionNotes, removeSectionNote } = noteSectionsSlice.actions;
 
 

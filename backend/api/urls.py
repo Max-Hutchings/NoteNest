@@ -18,6 +18,7 @@ urlpatterns = [
     path("clear-completed-tasks/", views.clear_completed_tasks),
     # path("update-note-position/", views.update_note_position),
     path("update-all-section-notes/", views.update_all_section_notes),
+    path("update-notes-section/", views.update_notes_section),
 
 
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

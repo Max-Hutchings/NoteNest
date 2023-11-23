@@ -1,67 +1,18 @@
-import React, { useEffect, useState} from "react";
+import React, { useState} from "react";
 import "./standard_note_section.css"
 import NoteTextArea from "./note_text_area/NoteTextArea";
 import DeleteIcon from '@mui/icons-material/Delete';
-import {closestCenter, DndContext, useDroppable} from "@dnd-kit/core"
-import {SortableContext, verticalListSortingStrategy, arrayMove} from "@dnd-kit/sortable";
-import {useDispatch, useSelector} from "react-redux";
-import { updateSectionNotes } from "../../../../services/slices/NoteSectionsSlice"
+import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
+
 
 
 function StandardNoteSection(props){
-
-    const dispatch = useDispatch()
-
-    // const {token} = useContext(AuthContext)
-    const token = "123";
     const sectionId = props.sectionData.id
-    console.log(sectionId)
-    // console.log(props.sectionData)
-    //
     const [title, setTitle] = useState(props.sectionData.title)
     const [addNoteText, setAddNoteText] = useState("")
-    const notes = useSelector(state => {
-        // Find the specific note section by its ID within the sections array
-        const section = state.noteSections.sections.find(s => s.id === sectionId);
-        // Return the notes array if the section is found, otherwise return an empty array
-        return section ? section.notes : [];
-    });
-
-
-
-    function handleNoteDrag(event) {
-        const { active, over } = event;
-        console.log("ActiveID: ", active.id)
-        console.log("OverID: ", over.id)
-
-
-        if (active.id !== over.id) {
-            const oldIndex = notes.findIndex(note => note.position === active.id);
-            const newIndex = notes.findIndex(note => note.position === over.id);
-
-            if (oldIndex === -1 || newIndex === -1) {
-                return; // Exit if either note is not found
-            }
-
-            const newNotes = arrayMove([...notes], oldIndex, newIndex);
-            // Reassign positions based on new order
-            const updatedNotes = newNotes.map((note, index) => ({ ...note, position: index + 1 }));
-
-            console.log("Dispatching updateSectionNotes", {sectionId: sectionId, newNotes: updatedNotes});
-            dispatch(updateSectionNotes({sectionId: sectionId, newNotes: updatedNotes}));
-            props.handleUpdateAllNotePositions(sectionId, updatedNotes)
-        }
-
-    }
-
-
-
 
     return(
-        <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleNoteDrag}
-            >
+
         <div className={"container standard-note-section"}>
             <div className={"row justify-content-center"}>
                 <div className="col d-flex align-items-center note-section-title-container">
@@ -84,11 +35,11 @@ function StandardNoteSection(props){
             </div>
 
                 <SortableContext
-                    items={notes ? notes.map(note => note.position) : []}
+                    items={props.notes ? props.notes.map(note => note.id) : []}
                     strategy={verticalListSortingStrategy}
                 >
 
-                    {notes && notes.map((note, index) => {
+                    {props.notes && props.notes.map((note, index) => {
                         return (
                             <NoteTextArea
                                 key={note.id}
@@ -133,8 +84,6 @@ function StandardNoteSection(props){
                 </div>
             </div>
         </div>
-        </DndContext>
-
     )
 }
 

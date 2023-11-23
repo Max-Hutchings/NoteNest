@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 // import useToken from "../services/getToken";
-import createAxiosInstance from "./createAxiosInstance";
+import createAxiosInstance from "../utilities/createAxiosInstance";
 import {useSelector } from "react-redux"
 
 
@@ -168,6 +168,23 @@ export const updateAllNotePositions = createAsyncThunk(
         }
     }
 
+)
+
+export const updateNotesSection = createAsyncThunk(
+    "noteSections/updateNotesSection",
+    async ({newSectionId, noteId}, {getState, rejectWithValue}) => {
+        try{
+            const token = getState().auth.token;
+            const response = await axios.put(
+                `http://127.0.0.1:8000/api/update-notes-section/`,
+                {"newSectionId": newSectionId,
+                "noteId": noteId},
+                config(token))
+
+        }catch(e){
+            return rejectWithValue(e.response.data)
+        }
+    }
 )
 
 // export const updateNotePosition = createAsyncThunk(

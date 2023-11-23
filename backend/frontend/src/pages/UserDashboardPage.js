@@ -14,8 +14,8 @@ import {
     deleteNote,
     deleteSection,
     getSections,
-    saveNote, toggleCompleteNote, updateAllNotePositions
-} from "../services/NoteSectionsAPI"
+    saveNote, toggleCompleteNote, updateAllNotePositions, updateNotesSection
+} from "../services/apis/NoteSectionsAPI"
 
 
 
@@ -63,6 +63,8 @@ function UserDashboardPage() {
     // ASSIGN NEW NOTE POSITION
     const handleUpdateAllNotePositions = (sectionId, sectionNotes) => {dispatch(updateAllNotePositions({sectionId: sectionId, sectionNotes: sectionNotes }))}
 
+    const handleUpdateNotesSection = (newSectionId, noteId) => {dispatch(updateNotesSection({newSectionId: newSectionId, noteId: noteId}))}
+
     function renderSections(){
         if (!Array.isArray(sections)){
             return null
@@ -78,6 +80,7 @@ function UserDashboardPage() {
                 handleDeleteSection={handleDeleteSection}
                 handleToggleCompleteNote={handleToggleCompleteNote}
                 handleUpdateAllNotePositions={handleUpdateAllNotePositions}
+                handleUpdateNotesSection={handleUpdateNotesSection}
 
             />)
     }

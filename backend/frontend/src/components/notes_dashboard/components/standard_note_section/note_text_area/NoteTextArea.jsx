@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../standard_note_section.css"
-import { useDraggable } from "@dnd-kit/core"
 import { CSS } from "@dnd-kit/utilities"
 import EditNotePage from "./edit_note_page/EditNotePage"
 import {useSortable} from "@dnd-kit/sortable";
@@ -14,10 +13,9 @@ function NoteTextArea(props) {
     const noteId = props.id;
     const textareaRef = useRef(null);
     const [textValue, setTextValue] = useState(note.text)
-    const [dragging, setDragging] = useState(false);
     const [editIconEnabled, setEdit] = useState(false)
     const [editNotePage, setEditNotePage] = useState(false)
-    // const [noteComplete, setNoteComplete] = useState(note.complete)
+
 
     const {
         attributes,
@@ -26,7 +24,7 @@ function NoteTextArea(props) {
         transform,
         transition,
       } = useSortable({
-        id: props.position,
+        id: props.id,
         attributes: {
             tabIndex: 0
         }
@@ -74,8 +72,6 @@ function NoteTextArea(props) {
                         ref={textareaRef}
                         className={"note-section-note"}
                         name="note"
-
-                        // onChange={e => setTextValue(e.target.value)}
                         {...listeners}
                         maxLength={200}
                     >{note.complete ? `<del> ${textValue} </del>`: textValue}</div>
