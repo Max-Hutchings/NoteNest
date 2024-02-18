@@ -32,7 +32,7 @@ export async function CreateAccount(filledForm, navigate) {
             localStorage.removeItem("refresh_token");
 
 
-            navigate("/dashboard");
+            navigate("/");
 
         return userForm
         }

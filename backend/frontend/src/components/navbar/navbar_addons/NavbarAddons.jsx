@@ -2,8 +2,12 @@ import React from "react";
 import "./navbar_addons.css"
 import CloseIcon from '@mui/icons-material/Close';
 import { Link } from 'react-router-dom';
+import {useSelector} from "react-redux";
 
 function NavbarAddons(props){
+
+    const user = useSelector(state => state.auth.user);
+    // const name = user?.name;
 
     function closeNav(){
         props.toggleMobileMenu();
@@ -22,16 +26,15 @@ function NavbarAddons(props){
                     </link>
                 </div>  : null}
             <Link className={`col navbar-navigation-links ${props.mobileFirst ? "mobile-bottom-border" : null}`} to={"/dashboard"}>Dashboard</Link>
-            <Link className={`col navbar-navigation-links ${props.mobileFirst ? "mobile-bottom-border" : null}`} to={"/"} onClick={props.logoutUser} >Logout</Link>
-            {/*{props.isAuthenticated ?*/}
+            {user ? <Link className={`col navbar-navigation-links ${props.mobileFirst ? "mobile-bottom-border" : null}`} to={"/"} onClick={props.logoutUser} >Logout</Link>
+                :
                 <Link className={"col navbar-navigation-links"} to={"/login"}>
                     <button className={" btn navbar-navigation-create-account-btn"}>
                         Login
                     </button>
-                </Link>
-            {/*        :*/}
-            {/*        null*/}
-            {/*}*/}
+                </Link> }
+
+
         </div>
     )
 }

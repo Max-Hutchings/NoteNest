@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 
 function LoginForm(props){
@@ -14,7 +15,7 @@ function LoginForm(props){
                         <button className={"btn authenticate-form-button"} onClick={props.submitForm} type={"submit"}>Sign Up</button>
                     </form>
                     <div className={"row authenticate-form-login-link"}>
-                        <p>Don't have an account? <a href={"/sign-up"}>Create Account</a></p>
+                        <p>Don't have an account? <Link to="/sign-up">Create Account</Link></p>
                     </div>
                 </div>
     )

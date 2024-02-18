@@ -7,15 +7,18 @@ import NavbarAddons from "./navbar_addons/NavbarAddons";
 import MenuIcon from '@mui/icons-material/Menu';
 import {useSelector, useDispatch} from "react-redux"
 import {logout} from "../../services/slices/UserAthenticationSlice"
-
+import {resetNoteSectionState} from "../../services/slices/NoteSectionsSlice";
 
 function Navbar(){
 
     const user = useSelector(state => state.auth.user)
-    const isAuthenticated = !!user
+    const isAuthenticated = user?.name;
 
     const dispatch = useDispatch();
-    const logoutUser = () => dispatch(logout)
+    const logoutUser = () => {
+        dispatch(logout());
+        dispatch(resetNoteSectionState());
+    }
 
 
     const isMobile = useMediaQuery({query: '(max-width: 767px)'});

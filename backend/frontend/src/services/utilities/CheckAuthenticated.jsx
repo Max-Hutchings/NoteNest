@@ -1,6 +1,7 @@
 import React from "react";
 import {Navigate} from "react-router-dom";
-import { useSelector } from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
+import {logout} from "../slices/UserAthenticationSlice"
 
 function CheckAuthenticated ( { children }){
     const user = useSelector(state => state.auth.user)
@@ -10,4 +11,15 @@ function CheckAuthenticated ( { children }){
     )
 }
 
-export default CheckAuthenticated
+function CheckNotAuthenticated({ children }){
+    const user = useSelector(state => state.auth.user);
+    const dispatch = useDispatch();
+    const name = user?.name;
+    if (!name){
+        dispatch(logout());
+    }
+    return children;
+
+}
+
+export{CheckNotAuthenticated, CheckAuthenticated};

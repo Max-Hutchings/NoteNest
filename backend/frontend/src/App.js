@@ -6,7 +6,7 @@ import Navbar from "./components/navbar/Navbar";
 import SignUpPage from "./pages/SignUpPage";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from "react-router-dom";
-import CheckAuthenticated from "./services/utilities/CheckAuthenticated";
+import {CheckAuthenticated, CheckNotAuthenticated} from "./services/utilities/CheckAuthenticated";
 import Footer from "./components/footer/Footer";
 import { useDispatch } from "react-redux";
 import { refreshAuthentication } from "./services/apis/RefreshAuthentication"
@@ -39,7 +39,7 @@ function App() {
                 <Navbar />
                     <Routes>
                         <Route path="/" element={<HomePage />} exact />
-                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/login" element={<CheckNotAuthenticated><LoginPage /> </CheckNotAuthenticated>} />
                         <Route path="/sign-up" element={<SignUpPage />} />
                         <Route path="/dashboard" element={<CheckAuthenticated><UserDashboardPage /></CheckAuthenticated>} />
                     </Routes>

@@ -30,6 +30,13 @@ const noteSectionsSlice = createSlice({
     initialState,
     reducers: {
     // ... other reducers ...
+    resetNoteSectionState: (state, action) => {
+        state.sections = [];
+        state.status = 'idle';
+        state.error = null;
+    },
+
+
     updateSectionNotes: (state, action) => {
 
         const { sectionId, newNotes } = action.payload;
@@ -85,6 +92,6 @@ const noteSectionsSlice = createSlice({
 
 export default noteSectionsSlice.reducer
 
-export const { updateSectionNotes, removeSectionNote } = noteSectionsSlice.actions;
+export const { updateSectionNotes, removeSectionNote, resetNoteSectionState } = noteSectionsSlice.actions;
 
 
